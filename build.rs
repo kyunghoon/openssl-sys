@@ -7,7 +7,8 @@ fn go() -> Result<()> {
             match std::env::var("HOST") {
                 Ok(host) if host == "x86_64-apple-darwin" => {
                     let out_dir = std::env::var("OUT_DIR").unwrap();
-                    let api_level = std::env::var("API_LEVEL").unwrap_or("23".to_owned());
+                    //let api_level = std::env::var("API_LEVEL").unwrap_or("23".to_owned());
+                    let api_level = std::env::var("API_LEVEL").unwrap_or("24".to_owned());
                     let ndk_root = std::env::var("ANDROID_NDK_HOME").expect("ANDROID_NDK_HOME is undefined");
                     
                     let toolchain = format!("{}/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin", ndk_root);
@@ -28,14 +29,12 @@ fn go() -> Result<()> {
                         .env("PATH", format!("{}:{}", toolchain.as_str(), env!("PATH")))
                         .current_dir(format!("{}/openssl", env!("CARGO_MANIFEST_DIR"))).output()?;
 
-                    let out = Command::new("make")
+                    Command::new("make")
                         .env("PATH", format!("{}:{}", toolchain.as_str(), env!("PATH")))
                         .arg("install_sw")
                         .arg(format!("DESTDIR={}", out_dir))
                         .current_dir(format!("{}/openssl", env!("CARGO_MANIFEST_DIR"))).output()?;
-                    println!("cargo:warning=>>{:?}", out);
 
-                    //println!("cargo:warning=OUT_DIR:={}", out_dir);
                     println!("cargo:INCLUDE={}/usr/local/include", out_dir);
                     println!("cargo:LIB={}/usr/local/lib", out_dir);
                 }
