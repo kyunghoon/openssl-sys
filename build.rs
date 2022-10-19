@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::{process::Command, path::Path};
+use std::{process::Command, path::Path, env::var};
 
 macro_rules! check {
     ($out: expr) => {
@@ -16,9 +16,10 @@ fn go() -> Result<()> {
             match std::env::var("HOST") {
                 Ok(host) if host == "x86_64-apple-darwin" => {
 
-                    let out_dir = std::env::var("OUT_DIR").unwrap();
-                    let ndk_root = std::env::var("ANDROID_NDK_HOME").expect("ANDROID_NDK_HOME is undefined");
-                    let api_level = std::env::var("API_LEVEL").unwrap_or("23".to_owned());
+                    let out_dir = var("OUT_DIR").unwrap();
+                    let ndk_root = var("ANDROID_NDK_HOME").expect("ANDROID_NDK_HOME is undefined");
+                    //let api_level = var("API_LEVEL").unwrap_or("24".to_owned());
+                    let api_level = var("API_LEVEL").unwrap_or("23".to_owned());
 
                     let toolchain = format!("{}/toolchains/{}-4.9/prebuilt/darwin-x86_64/bin", ndk_root, target);
                     assert!(Path::new(toolchain.as_str()).exists(), "toolchain not found");
@@ -33,6 +34,7 @@ fn go() -> Result<()> {
                         .arg("no-asm")
                         .arg("no-shared")
                         .arg("no-unit-test")
+                        .arg(if var("PROFILE").unwrap() == "debug" { "--debug" } else { "--release" })
                         .current_dir(format!("{}/openssl", env!("CARGO_MANIFEST_DIR"))).output()?);
 
                     check!(Command::new("make")
