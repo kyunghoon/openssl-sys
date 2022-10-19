@@ -34,7 +34,7 @@ fn go() -> Result<()> {
                         .arg("no-asm")
                         .arg("no-shared")
                         .arg("no-unit-test")
-                        .arg(if var("PROFILE").unwrap() == "debug" { "--debug" } else { "--release" })
+                        //.arg(if var("PROFILE").unwrap() == "debug" { "--debug" } else { "--release" })
                         .current_dir(format!("{}/openssl", env!("CARGO_MANIFEST_DIR"))).output()?);
 
                     check!(Command::new("make")
