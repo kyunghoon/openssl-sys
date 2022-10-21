@@ -14,7 +14,7 @@ fn go() -> Result<()> {
     match std::env::var("TARGET") {
         Ok(target) if target == "aarch64-linux-android" => {
             match std::env::var("HOST") {
-                Ok(host) if host == "x86_64-apple-darwin" => {
+                Ok(host) if host == "x86_64-apple-darwin" || host == "aarch64-apple-darwin" => {
 
                     let out_dir = var("OUT_DIR").unwrap();
                     let ndk_root = var("ANDROID_NDK_HOME").expect("ANDROID_NDK_HOME is undefined");
